@@ -27,13 +27,8 @@ function UserListHeader({}: any) {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="firstName">First Name</SelectItem>
-                    <SelectItem value="lastName">Last Name</SelectItem>
-                    <SelectItem value="companyName">Company Name</SelectItem>
-                    <SelectItem value="address">Address</SelectItem>   
+                    <SelectItem value="lastName">Last Name</SelectItem>  
                     <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="city">City</SelectItem>
-                    <SelectItem value="state">State</SelectItem>
-                    <SelectItem value="country">Country</SelectItem>
                 </SelectContent>
                 </Select>
             </div>

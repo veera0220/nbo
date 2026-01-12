@@ -13,7 +13,8 @@ import {
 } from '../../../ui/select';
 
 import { 
-Search
+Search,
+XIcon
 } from 'lucide-react';
 
 import { useLocation, useNavigate } from "react-router-dom";
@@ -27,6 +28,8 @@ interface UserFormData {
   role: string;
   status:string;
   region: string;
+  regionLookup:string;
+  regionSelected:string[];
 }
 
 const CreateNewUser = () => {
@@ -70,6 +73,8 @@ const options = [
     status: "",
     region: "",
     role: "",
+    regionLookup:"",
+    regionSelected:[],
   });
 
   // Prefill data when editing
@@ -84,11 +89,13 @@ const options = [
         status: state.status || "",
         region: state.region || "",
         role: state.role || "",
+        regionLookup: "",
+        regionSelected: [],
       });
     }
   }, [state]);
 
-    const handleChange = (name: string, value: string) => {
+  const handleChange = (name: string, value: string | string[]) => {
     setFormData((prev:any) => ({
       ...prev,
       [name]: value,
@@ -164,7 +171,7 @@ const handleCancel = () => {
                 id="userName"
                 value={formData.userName}
                 onChange={(e) => handleChange("userName", e.target.value)}
-                placeholder="Enter first name"
+                placeholder="Enter user name"
                 required
               />
             </div>
@@ -178,15 +185,6 @@ const handleCancel = () => {
               />
             </div>
             <div>
-              <Label htmlFor="name">Last Name</Label>
-              <Input
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) => handleChange("lastName", e.target.value)}
-                placeholder="Enter last name"
-              />
-            </div> 
-            <div>
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -196,6 +194,67 @@ const handleCancel = () => {
                 placeholder="Enter email"
               />
             </div>
+             <div>
+              <Label htmlFor="region">Region</Label>
+              <Select
+                value={formData.region}
+                onValueChange={(value:any) => handleChange("region", value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Region" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ap_ems">AP EMS</SelectItem>
+                  <SelectItem value="ap_ems1">AP EMS1</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {(formData.role === "FSE" || formData.role === "FAE") && (
+              <>
+                {/* Region Lookup */}
+                <div>
+                  <Label htmlFor="regionLookup">Region Lookup</Label>
+                  <Select
+                    value=""
+                    onValueChange={(value: any) => {
+                      if (!formData.regionSelected.includes(value)) {
+                        handleChange("regionSelected", [...formData.regionSelected, value]);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Region Lookup" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="test1">Test 1</SelectItem>
+                      <SelectItem value="test2">Test 2</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Region(s) Selected as Tag Buttons */}
+                <div className="mt-4">
+                  <Label>Region(s) Selected</Label>
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {formData.regionSelected.map((region: string) => (
+                      <button
+                        key={region}
+                        type="button"
+                        className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                        onClick={() =>
+                          handleChange(
+                            "regionSelected",
+                            formData.regionSelected.filter((r: string) => r !== region)
+                          )
+                        }
+                      >
+                        {region} <XIcon className="ml-2" style={{width: "15px", height: "15px"}}/>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}            
           </div>
           <div className='left-section space-y-4 w-full ml-4'>           
             <div>
@@ -212,23 +271,17 @@ const handleCancel = () => {
                   <SelectItem value="inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
-            </div>            
+            </div>   
             <div>
-              <Label htmlFor="role">Region</Label>
-              <Select
-                value={formData.region}
-                onValueChange={(value:any) => handleChange("region", value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Region" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ap_ems">AP EMS</SelectItem>
-                  <SelectItem value="ap_ems1">AP EMS1</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
+              <Label htmlFor="name">Last Name</Label>
+              <Input
+                id="lastName"
+                value={formData.lastName}
+                onChange={(e) => handleChange("lastName", e.target.value)}
+                placeholder="Enter last name"
+              />
+            </div>          
+             <div>
               <Label htmlFor="role">Role</Label>
               <Select
                 value={formData.role}
@@ -238,13 +291,14 @@ const handleCancel = () => {
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="manager">Manager</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="FSE">FSE</SelectItem>
+                  <SelectItem value="FAE">FAE</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div>                   
+
             <div>
-              <Label htmlFor="role">Company Name</Label>
+              <Label htmlFor="companyname">Company Name</Label>
               <Select>
                 <SelectTrigger className="relative pl-9">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -325,7 +379,7 @@ const handleCancel = () => {
           </div>  
           {/* Customer */}
           <div className='employee-type-list'>
-            <div className='title flex items-center mb-2 gap-2'>
+            {/* <div className='title flex items-center mb-2 gap-2'>
               <h4 className='font-semibold mb-0'>Customer</h4> 
               <button className='text-blue-500 text-xs font-semibold cursor-pointer'
                 type="button"
@@ -333,8 +387,8 @@ const handleCancel = () => {
                 style={{paddingTop:"7px !important"}}
               >{showCompanyName ? "Hide" : "Show"}</button>
               
-            </div>
-             {showCompanyName &&
+            </div> */}
+             {/* {showCompanyName && */}
               <div className="profile-row flex items-start gap-2 mb-6">
                 <span className="text-sm label w-32 text-left font-semibold text-gray-600">
                   Company Name
@@ -344,7 +398,7 @@ const handleCancel = () => {
                   Amphenol ICC
                 </span>
               </div>
-              }
+              {/* } */}
           
           </div>          
         </>

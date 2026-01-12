@@ -250,7 +250,8 @@ const UserManagementListView = () => {
       <div className="user-table-list">
         <DataTable value={UserData} 
          header={renderedTableHeader}
-         rows={10} 
+         rows={10}
+         paginator 
          stripedRows>
           <Column field="fullName" header="Full Name" 
           body={selectRowData}
@@ -263,27 +264,24 @@ const UserManagementListView = () => {
           <Column field="country" header="Country" sortable />
         </DataTable>
        </div>
+       {/* Note Modal */}
+        {showNote &&
+          <Dialog open={showNote} onOpenChange={setShowNote}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Note</DialogTitle>
 
+                  <p className="text-sm text-gray-500 mt-4">
+                    * Users from all Amphenol divisions have been included in the employee count
+                    and excluded from the customer account. Additionally, customers with no
+                    active registered users have been excluded from the company count.
+                    Accordingly, totals here may differ from other reports.
+                  </p>
 
-             {showNote &&
-                  <Dialog open={showNote} onOpenChange={setShowNote}>
-                    <DialogContent className="max-w-md">
-                      <DialogHeader>
-                        <DialogTitle>Note</DialogTitle>
-
-                          <p className="text-sm text-gray-500 mt-4">
-                            * Users from all Amphenol divisions have been included in the employee count
-                            and excluded from the customer account. Additionally, customers with no
-                            active registered users have been excluded from the company count.
-                            Accordingly, totals here may differ from other reports.
-                          </p>
-
-                      </DialogHeader>
-                    </DialogContent>
-                  </Dialog>
-              }
-
-
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        }
     </div>
   );
 };
